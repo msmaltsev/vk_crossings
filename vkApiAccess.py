@@ -2,7 +2,7 @@
 # -*- coding: utf8 -*-
 
 import requests as req
-import simplejson as json, time
+import json
 
 def vk_makeRequest(method, access_token, **kwargs):
     request = 'https://api.vk.com/method/%s'%method
@@ -10,9 +10,8 @@ def vk_makeRequest(method, access_token, **kwargs):
         request += '?'
         for kwarg in kwargs:
             request += '%s=%s&'%(kwarg, kwargs[kwarg])
-    request += '&v=5.71&access_token=%s'%access_token
-    # print(request)
-    return request
+    request += 'access_token=%s'%access_token
+    return request + '&v=5.80'
 
 
 def vk_callRequest(request, req_method):
@@ -23,25 +22,12 @@ def vk_callRequest(request, req_method):
     return j
 
 
-def callVkApi(method, access_token, **kwargs):
+def callVkApi(method, access_token, req_method = 'get', **kwargs):
     request = vk_makeRequest(method, access_token, **kwargs)
-    # print(request)
-    response = vk_callRequest(request, 'get')
-
-    if 'error' in response:
-        if response['error']['error_code'] == 15:
-            print('no access to group')
-            response = {'count':0,'users':[]}
-        else:
-            while 'error' in response:
-                print(response['error'])
-                time.sleep(0.333333)
-                print('calling again...')
-                response = vk_callRequest(request, 'get')
+    # print(req_method.upper(), request)
+    response = vk_callRequest(request, req_method)
     try:
         response = response['response']
-    except Exception as e:
-        # print(e)
-        response = response
-    # print('response: ', response)
+    except:
+        pass
     return response

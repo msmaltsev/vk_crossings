@@ -78,6 +78,7 @@ def getGroupUsers(groupid, access_token):
 def getGroupNumId(screen_names_list, access_token):
     group_ids = ','.join(screen_names_list)
     res = callVkApi('groups.getById', access_token, group_ids=group_ids)
+    # print(res)
     d = [i['id'] for i in res]
     return d
 
@@ -104,5 +105,18 @@ def main():
 
 
 if __name__ == '__main__':
-    # access_token = open('access_token', 'r', encoding='utf8').read()
-    main()
+    access_token = open('access_token', 'r', encoding='utf8').read()
+    groups_dict = {}
+    gid = ['club123275393']
+    u = getGroupNumId(gid, access_token)
+    for a in range(len(gid)):
+        groups_dict[u[a]] = gid[a]
+    for i in groups_dict.keys():
+        f = open('%s.txt'%groups_dict[i], 'w', encoding='utf8')
+        users = getGroupUsers(i, access_token)
+        for uid in users:
+            print('https://vk.com/id%s'%uid, file=f)
+        f.close()
+
+    # main()
+    
